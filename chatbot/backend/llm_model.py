@@ -1,14 +1,23 @@
 import os
 import requests
-from llama_cpp import Llama
+from groq import Groq
 
-llm = Llama.from_pretrained(
-	repo_id="modularai/Llama-3.1-8B-Instruct-GGUF",
-	filename="llama-3.1-8b-instruct-q6_k.gguf",
-    n_ctx=4096,   
-    n_batch=512 
+client = Groq(
+    api_key=os.environ.get("GROQ_API_KEY"),
 )
 
 def query_llama(prompt: str) -> str:
-    results = llm(prompt, max_tokens=512)
-    return results["choices"][0]["text"]
+    chat_completion = client.chat.completions.create(
+    messages=[
+        {
+            "role": "user",
+            "content": prompt,
+        }
+    ],
+    model="llama-3.1-8b-instant",
+    )
+    return chat_completion.choices[0].message.content
+
+
+
+
